@@ -1,9 +1,11 @@
+import shutil
 import streamlit as st
 import pandas as pd
 import numpy as np
 from config import *
 import os
 import requests
+import os.path as osp
 
 from utils.merge_gt_to_mot_gt import merge_gt_to_mot_gt
 from utils.mot_gt_to_merge_gt import mot_gt_to_merge_gt
@@ -52,7 +54,11 @@ def main():
                 mime="application/zip"
             )
 
-    
+        # remove after finish
+        shutil.rmtree(saved_path[:-4])
+        os.remove(saved_path)
+
+
     st.title("Convert annotation from multiple view to single views")
 
     upload_file = st.file_uploader("Upload your zip folder in Datumaru format:", type=SUPPORT_FORMAT)
@@ -72,6 +78,10 @@ def main():
                 file_name="single_views_mot.zip",
                 mime="application/zip"
             )
+        
+        # remove after finish
+        shutil.rmtree(saved_path[:-4])
+        os.remove(saved_path)
 
 if __name__ == "__main__":
     main()
