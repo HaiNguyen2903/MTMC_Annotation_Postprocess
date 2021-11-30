@@ -20,9 +20,9 @@ def mkdir_if_missing(path):
         print('mkdir {}'.format(path))
         os.makedirs(path)
 
-def process_object_gt(line, current_total_id, position, frame_shape):
+def process_object_gt(line, current_total_id, position, frame_shape=VIEW_SHAPE):
     # this function is use to update new id and new coordinate for object gt
-    height, width = frame_shape
+    width, height = frame_shape
 
     line = line.strip()
     line = line.split(",")
@@ -59,15 +59,68 @@ def reformat_line(line):
 def get_frame_idx(line):
     return int(line[0])
 
-def mot_gt_to_merge_gt(gt_zip, out_dir):
+# def mot_gt_to_merge_gt(gt_zip, out_dir):
+#     vid_pos = ["top left", "top right", "bottom left", "bottom right"]
+
+#     # gt_list = [osp.join(gt_dir, gt) for gt in sorted(os.listdir(gt_dir))]
+#     gt_dir = unzip(save_folder=SAVE_FOLDER, zip_name=os.path.basename(gt_zip))
+
+#     gt_list = glob.glob("{}/*.txt".format(gt_dir))
+
+#     frame_shape = (1080, 1920)
+
+#     current_total_id = 0
+
+#     merge_content = []
+
+#     max_id = 1
+
+#     for idx, path in enumerate(gt_list):
+#         position = vid_pos[idx]
+
+#         with open(path, "r") as f:
+#             lines = f.readlines()
+#             lines = [
+#                 process_object_gt(line,current_total_id,position,frame_shape)
+#                 for line in lines
+#             ]
+
+#             merge_content.extend(lines)
+
+#         max_id = find_max_id(path)
+#         current_total_id += max_id
+
+#     merge_content.sort(key=get_frame_idx)
+#     merge_content = [reformat_line(line) for line in merge_content]
+
+#     '''
+#     Write to MOT format 
+#     '''
+#     print('out_dir', out_dir)
+#     mkdir_if_missing(out_dir)
+#     os.mkdir(osp.join(out_dir, 'gt'))
+#     out_label = osp.join(out_dir, "gt/labels.txt")
+#     out_gt = osp.join(out_dir, 'gt/gt.txt')
+    
+#     with open(out_label, 'w') as f: 
+#         f.write('person')
+#         f.close()
+
+#     with open(out_gt, "w") as f:
+#         for line in merge_content:
+#             f.write(line)
+
+#     zip_dir(src_dir=out_dir, out_zip=out_dir)
+
+#     return out_dir + '.zip'
+
+def mot_gt_to_merge_gt(gt_zip):
     vid_pos = ["top left", "top right", "bottom left", "bottom right"]
 
     # gt_list = [osp.join(gt_dir, gt) for gt in sorted(os.listdir(gt_dir))]
     gt_dir = unzip(save_folder=SAVE_FOLDER, zip_name=os.path.basename(gt_zip))
 
     gt_list = glob.glob("{}/*.txt".format(gt_dir))
-
-    frame_shape = (1080, 1920)
 
     current_total_id = 0
 
@@ -81,7 +134,7 @@ def mot_gt_to_merge_gt(gt_zip, out_dir):
         with open(path, "r") as f:
             lines = f.readlines()
             lines = [
-                process_object_gt(line,current_total_id,position,frame_shape)
+                process_object_gt(line,current_total_id,position,VIEW_SHAPE)
                 for line in lines
             ]
 
@@ -96,11 +149,14 @@ def mot_gt_to_merge_gt(gt_zip, out_dir):
     '''
     Write to MOT format 
     '''
-    print('out_dir', out_dir)
-    mkdir_if_missing(out_dir)
-    os.mkdir(osp.join(out_dir, 'gt'))
-    out_label = osp.join(out_dir, "gt/labels.txt")
-    out_gt = osp.join(out_dir, 'gt/gt.txt')
+    out_dir = osp.join(gt_dir, 'output')
+
+    mot_root = osp.join(out_dir, 'gt')
+
+    mkdir_if_missing(mot_root)
+   
+    out_label = osp.join(mot_root, "labels.txt")
+    out_gt = osp.join(mot_root, "gt.txt")
     
     with open(out_label, 'w') as f: 
         f.write('person')

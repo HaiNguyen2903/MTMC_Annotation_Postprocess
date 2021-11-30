@@ -9,6 +9,7 @@ zip_file = 'test_streamlit.zip'
 gt_dir = '/Users/hainguyen/Documents/deep_learning_projects/streamlit/save_dir/test_streamlit'
 out_dir = '/Users/hainguyen/Documents/deep_learning_projects/streamlit/save_dir/test_streamlit/merge'
 
-out = mot_gt_to_merge_gt(gt_dir, out_dir)
-print(out)
+# out = mot_gt_to_merge_gt(gt_dir, out_dir)
+# print(out)
 
+zip_dir(src_dir='test_zip', out_zip='anc')

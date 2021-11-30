@@ -30,9 +30,6 @@ def save_uploadedfile(uploadedfile):
 
     return save_path
 
-
-    # return st.success("Saved File:{} to tempDir".format(uploadedfile.name))
-
 def main():
     st.title("Convert annotation from single views to multiple view")
 
@@ -40,10 +37,10 @@ def main():
 
     col1, col2, col3, col4, col5, col6_7, col8, col9, col10, col11 = st.columns([1,1,1,1,1,2,1,1,1,1])
 
-    if upload_file is not None and col6_7.button('Generate file'):
+    if upload_file is not None and col6_7.button('Process file'):
         saved_path = save_uploadedfile(upload_file)
 
-        out_file = mot_gt_to_merge_gt(gt_zip=saved_path, out_dir=saved_path[:-4])
+        out_file = mot_gt_to_merge_gt(gt_zip=saved_path)
         print('out_file', out_file)
 
         # download zip file
@@ -56,18 +53,16 @@ def main():
             )
 
     
-    
     st.title("Convert annotation from multiple view to single views")
 
     upload_file = st.file_uploader("Upload your zip folder in Datumaru format:", type=SUPPORT_FORMAT)
 
     col1, col2, col3, col4, col5, col6_7, col8, col9, col10, col11 = st.columns([1,1,1,1,1,2,1,1,1,1])
 
-    if upload_file is not None and col6_7.button('Generate file'):
+    if upload_file is not None and col6_7.button('Process file'):
         saved_path = save_uploadedfile(upload_file)
 
-        out_file = mot_gt_to_merge_gt(gt_zip=saved_path, out_dir=saved_path[:-4])
-        print('out_file', out_file)
+        out_file = merge_gt_to_mot_gt(gt_zip=saved_path)
 
         # download zip file
         with open(out_file, "rb") as fp:

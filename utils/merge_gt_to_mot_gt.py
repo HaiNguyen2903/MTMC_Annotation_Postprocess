@@ -1,33 +1,15 @@
 import json
 import os 
 import os.path as osp
-import argparse
-
-parser = argparse.ArgumentParser(description="Arguments for converting \
-                                              Datumaru multi view gt file \
-                                              into separate MOT gt files")
-
-parser.add_argument("--merge_gt", default="/Users/hainguyen/Documents/deep_learning_projects/mtmc_annotate/fusing_multi_view/gt/scene_3/multi_view_4125_4126/default.json",
-                                type=str,
-                                help="json gt path")
-
-parser.add_argument("--output_dir", default="/Users/hainguyen/Documents/deep_learning_projects/mtmc_annotate/generate_top_view/sence3/",  
-                                type=str, 
-                                help="output dir to contain separate MOT \
-                                      files for each view")
-
-parser.add_argument("--view_shape", default=(1920, 1080), type=tuple)
-
-args = parser.parse_args()
-
-view_shape = args.view_shape
+from config import *
+from utils.utils import *
 
 def mkdir_if_missing(dir_path):
     if not os.path.exists(dir_path):
         print("Make dir in {}".format(dir_path))
         os.makedirs(dir_path)
 
-def get_view_id(bbox, view_shape=view_shape):
+def get_view_id(bbox, view_shape=VIEW_SHAPE):
     # each view is define as left top and width height
     # return view id
     width, height = view_shape
@@ -53,7 +35,7 @@ def get_view_id(bbox, view_shape=view_shape):
         else:
             return 4
 
-def get_original_coordinate(bbox, view_id, view_shape=args.view_shape):
+def get_original_coordinate(bbox, view_id, view_shape=VIEW_SHAPE):
     width, height = view_shape
 
     left, top = bbox[0], bbox[1]
@@ -95,9 +77,12 @@ def get_view_objects(merge_gt):
     # get a dictionary, where keys are group id and values are tracking id 
     groups = {}
 
-    f = open(merge_gt)
+    with open(merge_gt, 'r') as f: 
+        data = json.load(f)
 
-    data = json.load(f)
+    # f = open(merge_gt)
+
+    # data = json.load(f)
 
     for item in data["items"]:
         frame_id = item['id']
@@ -137,20 +122,32 @@ def get_view_objects(merge_gt):
 
     return view_objects, groups
 
-def merge_gt_to_mot_gt(merge_gt, output_dir):
-    view_objects, id_groups = get_view_objects(merge_gt=merge_gt)
+def merge_gt_to_mot_gt(gt_zip):
+    # root of datumaru annotation format
+    gt_dir = unzip(save_folder=SAVE_FOLDER, zip_name=os.path.basename(gt_zip))
 
-    # for view in view_objects:
-    #     print(view)
-    #     for obj in view_objects[view]:
-    #         print(obj)
+    # root output dir to save MOT gt files 
+    output_dir = osp.join(gt_dir, 'output')
 
     mkdir_if_missing(output_dir)
 
-    for view in view_objects:
-        save_path = osp.join(output_dir, "{}.txt".format(view))
+    merge_gt = osp.join(gt_dir, 'dataset/annotations/default.json')
 
-        with open(save_path, 'w') as f:
+    view_objects, id_groups = get_view_objects(merge_gt=merge_gt)
+
+    for view in view_objects:
+        view_dir = osp.join(output_dir, view)
+
+        mot_root = osp.join(view_dir, 'gt')
+
+        mkdir_if_missing(mot_root)
+
+        # os.mkdir(osp.join(view_dir, 'gt'))
+
+        save_gt_path = osp.join(mot_root, "gt.txt")
+        save_label_path = osp.join(mot_root, "labels.txt")
+
+        with open(save_gt_path, 'w') as f:
             for obj in view_objects[view]:
                 f.write("{},{},{},{},{},{},{},{},{}\n".format(obj[0], obj[1], 
                                                               obj[2], obj[3], 
@@ -158,5 +155,14 @@ def merge_gt_to_mot_gt(merge_gt, output_dir):
                                                               obj[6], obj[7], 
                                                               obj[8]))
 
-    
-merge_gt_to_mot_gt(merge_gt=args.merge_gt, output_dir='test_gt')
+        with open(save_label_path, 'w') as f:
+            f.write('person')
+            f.close
+
+        zip_dir(src_dir=mot_root, out_zip=mot_root)
+
+    zip_dir(src_dir=output_dir, out_zip=output_dir)
+
+    return output_dir + '.zip'
+
+# merge_gt_to_mot_gt(merge_gt=args.merge_gt, output_dir='test_gt')
