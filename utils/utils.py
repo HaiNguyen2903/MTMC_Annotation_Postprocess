@@ -4,8 +4,6 @@ import os.path as osp
 from config import *
 import shutil
 
-zip_file = 'test_streamlit.zip'
-
 def mkdir_if_missing(path):
     if not os.path.exists(path):
         print('mkdir {}'.format(path))
@@ -14,7 +12,8 @@ def mkdir_if_missing(path):
 def unzip(save_folder, zip_name):
     zip_path = osp.join(save_folder, zip_name)
     # out_dir = save_folder
-    out_dir = osp.join(save_folder, zip_name[:-4])
+    # out_dir = osp.join(save_folder, zip_name[:-4])
+    out_dir = osp.join(save_folder)
 
     with zipfile.ZipFile(zip_path, "r") as zip_ref:
         

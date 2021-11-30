@@ -116,11 +116,16 @@ def get_frame_idx(line):
 
 def mot_gt_to_merge_gt(gt_zip):
     vid_pos = ["top left", "top right", "bottom left", "bottom right"]
+    print('gt_zip', gt_zip)
 
     # gt_list = [osp.join(gt_dir, gt) for gt in sorted(os.listdir(gt_dir))]
     gt_dir = unzip(save_folder=SAVE_FOLDER, zip_name=os.path.basename(gt_zip))
 
-    gt_list = glob.glob("{}/*.txt".format(gt_dir))
+    gt_list = sorted(glob.glob("{}/*.txt".format(osp.join(gt_dir, os.path.basename(gt_zip)[:-4]))))
+
+    print(gt_list)
+
+    print('gt_dir', gt_dir)
 
     current_total_id = 0
 
@@ -134,7 +139,7 @@ def mot_gt_to_merge_gt(gt_zip):
         with open(path, "r") as f:
             lines = f.readlines()
             lines = [
-                process_object_gt(line,current_total_id,position,VIEW_SHAPE)
+                process_object_gt(line,current_total_id,position, VIEW_SHAPE)
                 for line in lines
             ]
 

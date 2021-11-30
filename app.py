@@ -39,7 +39,8 @@ def main():
 
     col1, col2, col3, col4, col5, col6_7, col8, col9, col10, col11 = st.columns([1,1,1,1,1,2,1,1,1,1])
 
-    if upload_file is not None and col6_7.button('Process file'):
+    if upload_file is not None and col6_7.button('Process file', key="single view process"):
+        print('fienfejfo')
         saved_path = save_uploadedfile(upload_file)
 
         out_file = mot_gt_to_merge_gt(gt_zip=saved_path)
@@ -65,7 +66,7 @@ def main():
 
     col1, col2, col3, col4, col5, col6_7, col8, col9, col10, col11 = st.columns([1,1,1,1,1,2,1,1,1,1])
 
-    if upload_file is not None and col6_7.button('Process file'):
+    if upload_file is not None and col6_7.button('Process file', key="multiple view process"):
         saved_path = save_uploadedfile(upload_file)
 
         out_file = merge_gt_to_mot_gt(gt_zip=saved_path)
@@ -80,8 +81,8 @@ def main():
             )
         
         # remove after finish
-        shutil.rmtree(saved_path[:-4])
-        os.remove(saved_path)
+        # shutil.rmtree(saved_path[:-4])
+        # os.remove(saved_path)
 
 if __name__ == "__main__":
     main()
