@@ -2,3 +2,4 @@ __pycache__/
 save_dir/
 test_gt/
 .DS_Store
+test.py

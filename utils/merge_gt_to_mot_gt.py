@@ -54,6 +54,14 @@ def get_original_coordinate(bbox, view_id, view_shape=VIEW_SHAPE):
     return bbox
 
 def get_global_id(obj_list, id_groups):
+    """
+    Args:
+        obj_list: list of objects in 1 view 
+        id_groups: a dict where keys are group id and
+                    values are ids in that group
+    Return: 
+        obj_list: list of object in 1 view after reid
+    """
     for obj in obj_list:
         obj_id = int(obj[1])
 
